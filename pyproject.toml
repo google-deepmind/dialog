@@ -15,7 +15,20 @@ keywords = []
 
 # pip dependencies of the project
 # Installed locally with `pip install -e .`
-dependencies = []
+dependencies = [
+    # ***** Core dependencies *****
+    "etils[enp,epath,epy]",
+    "lark",
+    "numpy",
+    "pillow",
+    "requests",
+    # ***** For Colab *****
+    "anywidget",
+    # ***** For function calling *****
+    "mcp",
+    # ***** For audio *****
+    "pydub",
+]
 
 # `version` is automatically set by flit to use `dialog.__version__`
 dynamic = ["version"]
