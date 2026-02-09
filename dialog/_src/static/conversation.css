@@ -1,0 +1,231 @@
+.conversation {
+  --spacing-unit: 8px;
+
+  --bg-color: #232730;
+  --text-color: #D8D8D8;
+  --user-color: #2B5278;
+  --model-color: #445566;  /* Original: #6A4C93 */
+  --developer-color: #855244;
+  --system-color: #945D31;
+  --context-color: #35664A;
+
+  /* JSON Syntax Highlighting Palette */
+  /* --json-bg: rgba(0, 0, 0, 0.25); */
+  --json-key: #6fb3d2;
+  --json-string: #CE9178;
+  --json-number: #B5CEA8;
+  --json-boolean: #569CD6;
+  --json-null: #569CD6;
+}
+
+.conversation details {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+
+  transition: all 0.2s ease-in-out;
+
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}
+
+/*
+MARK: Summary
+*/
+
+.conversation summary {
+  padding: var(--spacing-unit);
+
+  font-weight: 600;
+  font-size: 0.9rem;
+
+  cursor: pointer;
+  list-style: none;
+
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-unit);
+
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.conversation summary .subtitle {
+  /* Make it look grayed out by reducing opacity */
+  opacity: 0.5;
+
+  /* Reset font weight so it looks less important than the main title */
+  /* font-weight: 400; */
+}
+
+.conversation summary .collapse-icon {
+  margin: -4px;
+  margin-left: auto;
+}
+
+.conversation summary:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+
+.conversation svg {
+  width: auto;
+  height: 100%;
+}
+
+.conversation .collapse-icon {
+  width: auto;
+  height: 1.2em;
+  padding: 4px;
+
+  margin-left: auto;
+
+  border-radius: 3px;
+}
+
+.conversation .collapse-icon:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  stroke: rgba(242, 242, 242, 0.89); /* Darker stroke for the icon */
+}
+
+/*
+MARK: Content
+*/
+
+.conversation .content {
+  padding: var(--spacing-unit);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-unit);
+}
+
+.conversation p {
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.conversation img {
+  height: 150px;
+  width: auto;
+
+  align-self: flex-start;
+  max-width: 100%;
+}
+
+.conversation img.missing {
+  height: 150px;
+  width: 150px;
+}
+
+.conversation .control-token {
+  background-color: var(--bg-color);
+
+  padding: 6px 12px;
+  display: inline-block;
+  vertical-align: middle;
+
+  border-radius: 8px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.conversation .control-token:not(:last-child) {
+  margin-right: 4px;
+}
+
+.conversation .control-token:not(:first-child) {
+  margin-left: 4px;
+}
+
+.conversation .stream {
+  white-space: pre-wrap;
+}
+
+.conversation .stream > * {
+  white-space: normal;
+}
+
+/*
+MARK: Turns
+*/
+
+.conversation .system {
+  background-color: var(--system-color);
+}
+
+.conversation .user {
+  background-color: var(--user-color);
+}
+
+.conversation .model {
+  background-color: var(--model-color);
+}
+
+.conversation .developer {
+  background-color: var(--developer-color);
+}
+
+.conversation .context {
+  background-color: var(--context-color);
+}
+
+/*
+MARK: JSON (tool use)
+*/
+
+/* Container for the JSON inside the details content */
+.conversation .json-container {
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--text-color), transparent 20%);
+}
+
+/* Syntax Tokens */
+.conversation .json-dict {
+  display: flex;
+  flex-direction: column;
+}
+
+.conversation .json-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.conversation .json-dict > .json-item > .json-dict {
+  margin-left: 24px;
+}
+
+.conversation .json-dict > .json-item > .json-list {
+  margin-left: 24px;
+}
+
+.conversation .json-list > .json-item > .json-dict {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.conversation .json-list > .json-item > .json-list {
+  margin-left: 24px;
+}
+
+.conversation .json-key {
+  color: var(--json-key);
+}
+
+.conversation .json-string {
+  white-space: pre-wrap;
+  color: var(--json-string);
+}
+
+.conversation .json-number {
+  color: var(--json-number);
+}
+
+.conversation .json-boolean {
+  color: var(--json-boolean);
+}
+
+.conversation .json-null {
+  color: var(--json-null);
+}

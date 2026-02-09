@@ -1,0 +1,115 @@
+.conversation-str {
+  --spacing-unit: 8px;
+
+  --user-color: #5DADE2;
+  --model-color: #A9BCC9;
+  --developer-color: #D68571;  /* #ad7553 */
+  --system-color: #EBB15B;
+  --context-color: #5DAE76;
+
+  --invalid-color: #D32F2F;
+
+  /* JSON Syntax Highlighting Palette */
+  /* --json-bg: rgba(0, 0, 0, 0.25); */
+  --text-color: #D8D8D8;
+  --json-key: #6fb3d2;
+  --json-string: #CE9178;
+  --json-number: #B5CEA8;
+  --json-boolean: #569CD6;
+  --json-null: #569CD6;
+
+  font-family: monospace;
+  font-size: 1em;
+  white-space: pre-wrap;
+}
+
+.conversation-str .tag:hover {
+  filter: brightness(0.85);
+  /* color: color-mix(in srgb, currentColor, black 5%); */
+}
+
+.conversation-str .token {
+  font-weight: bold;
+}
+
+.conversation-str .role {
+  font-weight: bold;
+}
+
+.conversation-str .thought .content {
+  font-style: italic;
+}
+
+/* Toogle between full-text and ellipsis */
+.conversation-str .content .full-text {
+  display: inline;
+}
+
+.conversation-str .content .ellipsis {
+  display: none;
+}
+
+.conversation-str .content.collapsed .full-text {
+  display: none;
+}
+
+.conversation-str .content.collapsed .ellipsis {
+  display: inline;
+}
+
+.conversation-str .system {
+  color: var(--system-color);
+}
+
+.conversation-str .user {
+  color: var(--user-color);
+}
+
+.conversation-str .model {
+  color: var(--model-color);
+}
+
+.conversation-str .developer {
+  color: var(--developer-color);
+}
+
+.conversation-str .context {
+  color: var(--context-color);
+}
+
+.conversation-str .invalid * {
+  color: var(--invalid-color) !important;
+}
+
+/*
+MARK: JSON
+*/
+
+/* Container for the JSON inside the details content */
+.conversation-str .json-container {
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: var(--text-color);
+  /* color: color-mix(in srgb, var(--text-color), transparent 20%); */
+}
+
+.conversation-str .json-key {
+  color: var(--json-key);
+}
+
+.conversation-str .json-string {
+  white-space: pre-wrap;
+  color: var(--json-string);
+}
+
+.conversation-str .json-number {
+  color: var(--json-number);
+}
+
+.conversation-str .json-boolean {
+  color: var(--json-boolean);
+}
+
+.conversation-str .json-null {
+  color: var(--json-null);
+}
