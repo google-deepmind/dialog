@@ -37,4 +37,4 @@ def test_audio(tmp_path: pathlib.Path):
 
 
 def _assert_equal(audio_1: dialog.Audio, audio_2: dialog.Audio):
-  assert audio_1.as_gemini_example() == audio_2.as_gemini_example()
+  assert audio_1.as_text() == audio_2.as_text()

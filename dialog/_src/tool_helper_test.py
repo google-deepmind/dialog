@@ -12,12 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import dialog
+# Most tests are internal in `_src/gemini_example/` to ensure consistency
+# between dialog and gemini_example standard formatter.
+# TODO(epot): Move tests here while stipping gemini_example.
 
 
-def test_give_me_a_name():
-  dialog.Tool({
-      'description': 'bar',
-      'name': 'foo',
-      # 'inputSchema': {},
-  })
+def test_tool():
+  pass

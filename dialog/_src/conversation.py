@@ -252,8 +252,6 @@ class Turn(
       )
     elif isinstance(data, Conversation):
       return data.turns
-    elif (turns := gemini_adapters.maybe_turns_from_data(data)) is not None:
-      return turns
     elif isinstance(data, str):
       # Warning: This could potentially hide issues if users mix ctrl with
       # Gemma tokens.
