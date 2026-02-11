@@ -31,6 +31,7 @@ from dialog._src import img_helper
 from dialog._src import mixin_utils
 from dialog._src import resources
 from dialog._src import tool_helper
+from dialog._src.string import str_compat
 from dialog._src.string import text_utils
 from etils import enp
 from etils import epy
@@ -91,7 +92,12 @@ class Conversation(
     turns = _merge_similar_turns(turns)
     self.turns: list[Turn] = turns
 
-  def as_text(self, training: bool = False) -> str:
+  def as_text(
+      self,
+      *,
+      training: bool = False,
+      format: str_compat.Format | str = str_compat.Format.GEMMA4,  # pylint: disable=redefined-builtin
+  ) -> str:
     r"""Returns the text of the conversation.
 
     Text can be formatted for both training or inference. This affect
@@ -121,10 +127,13 @@ class Conversation(
     Args:
       training: If True, the text is formatted for training. If False, the text
         is formatted for inference.
+      format: The format of the tags (Gemma4: `<|turn>`, Gemma3:
+        `<start_of_turn>`, Gemini: `<ctrlXX>`).
 
     Returns:
       The text `str` of the conversation.
     """
+    format = str_compat.Format(format.lower())
 
     if not self.turns:
       return ''
@@ -153,6 +162,9 @@ class Conversation(
       text = [turn.as_text() for turn in self.turns]
 
     text = '\n'.join(text)
+    if format != str_compat.Format.GEMMA4:
+      return format.from_gemma4(text)
+
     return text_utils.ConversationStr(text)
 
   def as_html(

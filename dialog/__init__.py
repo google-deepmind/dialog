@@ -19,6 +19,7 @@
 # Conversation
 from dialog._src.conversation import Conversation
 from dialog._src.string.text_utils import ConversationStr
+from dialog._src.string.str_compat import Format
 
 # Turns
 from dialog._src.conversation import Turn

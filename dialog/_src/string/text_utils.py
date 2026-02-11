@@ -28,6 +28,7 @@ with epy.lazy_imports():
   # pytype: enable=import-error
   from dialog._src import widget as widget_lib
   from dialog._src import conversation
+  from dialog._src.string import str_compat
   # pylint: enable=g-import-not-at-top
 
 
