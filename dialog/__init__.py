@@ -18,8 +18,11 @@
 
 # Conversation
 from dialog._src.conversation import Conversation
+
+# String utils
 from dialog._src.string.text_utils import ConversationStr
 from dialog._src.string.str_compat import Format
+from dialog._src.tags import Tags
 
 # Turns
 from dialog._src.conversation import Turn

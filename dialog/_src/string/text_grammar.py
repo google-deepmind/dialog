@@ -417,6 +417,9 @@ def _make_tool_tag_content(items: list[Node]) -> Node:
       except Exception as e:  # pylint: disable=broad-except
         reason = f'Invalid tool tag. Parsing failed: {e}'
         return Invalid(children=items, reason=reason)
+    case []:
+      reason = 'Invalid tool tag. Empty content.'
+      return Invalid(children=items, reason=reason)
     case _:
       reason = 'Invalid tool tag. Contains non-text nodes.'
       return Invalid(children=items, reason=reason)

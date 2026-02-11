@@ -23,7 +23,15 @@ from dialog._src import conversation
 from dialog._src import html_helper
 from dialog._src import tags
 from dialog._src import widget as widget_lib
+from dialog._src.string import str_compat
 from dialog._src.string import text_utils
+
+
+_TAGS = (
+    tags.Tags.CHANNEL,
+    tags.Tags.TOOL_CALL,
+    tags.Tags.TOOL_RESPONSE,
+)
 
 
 @dataclasses.dataclass(kw_only=True)
@@ -37,15 +45,19 @@ class StreamHandler:
 
   def add(self, text: str) -> None:
     """Adds text to the stream."""
-    # Standard case: Add text at tht top level.
-    if not self.tag and text not in (
-        tags.Tags.CHANNEL.open,
-        tags.Tags.TOOL_CALL.open,
+    if (
+        not self.tag
+        and text.startswith(tuple(t.open for t in _TAGS))
+        and text.endswith(tuple(t.close for t in _TAGS))
     ):
+      assert not self.data
+      self.widget.stream_add_final_html = _str_to_final_html(text)
+    # Standard case: Add text at the top level.
+    elif not self.tag and text not in (t.open for t in _TAGS):
       assert not self.data
       self.widget.stream_add_final_html = html.escape(text)
     # Closing tag: Finalize the current chunk.
-    elif self.tag and text == self.tag.close:
+    elif self.tag and text.endswith(self.tag.close):
       self.data += text
       self.widget.stream_add_final_html = _str_to_final_html(self.data)
       self.widget.stream_replace_tmp_html = ''
@@ -58,14 +70,8 @@ class StreamHandler:
           self.tag, self.data
       )
     # Opening tag.
-    elif not self.tag and text in (
-        tags.Tags.CHANNEL.open,
-        tags.Tags.TOOL_CALL.open,
-    ):
-      self.tag = {
-          tags.Tags.CHANNEL.open: tags.Tags.CHANNEL,
-          tags.Tags.TOOL_CALL.open: tags.Tags.TOOL_CALL,
-      }[text]
+    elif not self.tag and text in (t.open for t in _TAGS):
+      self.tag = {t.open: t for t in _TAGS}[text]
       self.data += text
       self.widget.stream_replace_tmp_html = _str_to_tmp_html(
           self.tag, self.data
@@ -76,7 +82,7 @@ class StreamHandler:
 
 def _str_to_final_html(data: str) -> str:
   """Converts a string to a final HTML."""
-  chunk = text_utils.ConversationStr.from_gemini_str(data)
+  chunk = text_utils.ConversationStr(data)
 
   try:
     chunk = chunk.as_chunk()
@@ -108,9 +114,11 @@ def _str_to_tmp_html(tag: tags.ClosedTag, data: str) -> str:
 
 def connect_stream(
     widget: widget_lib.Conversation,
-    conv: conversation.Conversation,
+    conv: conversation.Conversation | conversation.Turn,
 ) -> None:
   """Connects the stream to the widget."""
+  if isinstance(conv, conversation.Turn):
+    conv = [conv]
   for turn in conv:
     for chunk in turn:
       if isinstance(chunk, conversation.Stream):

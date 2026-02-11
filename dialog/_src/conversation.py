@@ -30,6 +30,7 @@ from dialog._src import html_helper
 from dialog._src import img_helper
 from dialog._src import mixin_utils
 from dialog._src import resources
+from dialog._src import tags
 from dialog._src import tool_helper
 from dialog._src.string import str_compat
 from dialog._src.string import text_utils
@@ -97,6 +98,7 @@ class Conversation(
       *,
       training: bool = False,
       format: str_compat.Format | str = str_compat.Format.GEMMA4,  # pylint: disable=redefined-builtin
+      add_tool_response_tag_after_call: bool = True,
   ) -> str:
     r"""Returns the text of the conversation.
 
@@ -129,6 +131,8 @@ class Conversation(
         is formatted for inference.
       format: The format of the tags (Gemma4: `<|turn>`, Gemma3:
         `<start_of_turn>`, Gemini: `<ctrlXX>`).
+      add_tool_response_tag_after_call: If True, a `<|tool_response>` is added
+        after the model calls (when last model turns ends with a tool call).
 
     Returns:
       The text `str` of the conversation.
@@ -158,6 +162,10 @@ class Conversation(
           turn.as_text(open=o, closed=c)
           for turn, o, c in zip(turns, opens, closes)
       ]
+
+      # Special case, for tool-use, strip/add the <|tool_response> prefix.
+      if add_tool_response_tag_after_call:
+        text = _maybe_strip_add_tool_response_tag(text, turns)
     else:
       text = [turn.as_text() for turn in self.turns]
 
@@ -265,8 +273,9 @@ class Turn(
     elif isinstance(data, Conversation):
       return data.turns
     elif isinstance(data, str):
-      # Warning: This could potentially hide issues if users mix ctrl with
-      # Gemma tokens.
+      # Remove the tool response tag.
+      if data.endswith(tags.Tags.TOOL_RESPONSE.open):
+        data = data.removesuffix(tags.Tags.TOOL_RESPONSE.open)
       return (
           text_utils.ConversationStr(data)
           .as_conversation().turns
@@ -315,7 +324,13 @@ class Turn(
     """Returns the widget of the conversation."""
     body = self.as_html(collapsed=collapsed)
     html_str = resources.read('elements.html') + body
-    return widget_lib.Conversation(conversation=html_str)
+    widget = widget_lib.Conversation(conversation=html_str)
+    streaming.connect_stream(widget, self)
+    return widget
+
+  def show(self, *, collapsed: bool = False) -> None:
+    """Shows the turn."""
+    IPython.display.display(self.as_widget(collapsed=collapsed))
 
   def merge_text(self) -> Self:
     """Merges all text chunks into a single text chunk."""
@@ -851,3 +866,25 @@ def _merge_similar_turns(turns: list[Turn]) -> list[Turn]:
 
   all_turns.append(curr_turn)
   return all_turns
+
+
+def _maybe_strip_add_tool_response_tag(
+    text: list[str], turns: list[Turn]
+) -> list[str]:
+  """Removes the tool response prefix from the text."""
+  # Remove the <|tool_response>
+  if (
+      isinstance(turns[0], Model)
+      and turns[0]
+      and isinstance(turns[0][0], ToolResponse)
+  ):
+    text[0] = text[0].removeprefix(tags.Tags.TOOL_RESPONSE.open)
+  # Add the <|tool_response>
+  if (
+      isinstance(turns[-1], Model)
+      and turns[-1]
+      and isinstance(turns[-1][-1], ToolCall)
+  ):
+    text[-1] = text[-1] + tags.Tags.TOOL_RESPONSE.open
+
+  return text

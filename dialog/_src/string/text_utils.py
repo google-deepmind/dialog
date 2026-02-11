@@ -16,8 +16,6 @@
 
 from __future__ import annotations
 
-from typing import Self
-
 from dialog._src.string import text_grammar
 from etils import epy
 
@@ -28,7 +26,6 @@ with epy.lazy_imports():
   # pytype: enable=import-error
   from dialog._src import widget as widget_lib
   from dialog._src import conversation
-  from dialog._src.string import str_compat
   # pylint: enable=g-import-not-at-top
 
 

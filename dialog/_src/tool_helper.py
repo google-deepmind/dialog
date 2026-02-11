@@ -26,6 +26,7 @@ from dialog._src import auto_register
 from dialog._src import mixin_utils
 from dialog._src import schema_utils
 from dialog._src import tags
+from dialog._src.string import str_compat
 from dialog._src.string import text_utils
 from etils import epy
 
@@ -387,7 +388,7 @@ def _json_to_text(json: epy.typing.Json) -> str:
 
 def _tool_from_text[_McpT](text: str, dialog_cls: type[_McpT]) -> _McpT:
   """Converts a tool definition to MCP tool."""
-  chunk = text_utils.ConversationStr.from_gemini_str(text).as_chunk()
+  chunk = text_utils.ConversationStr(text).as_chunk()
   if not isinstance(chunk, dialog_cls):
     raise ValueError(
         f'Invalid tool text. Expected `{dialog_cls.__name__}` content. Got:'
