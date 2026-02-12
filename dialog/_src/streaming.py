@@ -45,6 +45,12 @@ class StreamHandler:
 
   def add(self, text: str) -> None:
     """Adds text to the stream."""
+    if not self.widget:
+      raise ValueError(
+          'To use `dialog.Stream`, you first need to display the associated'
+          ' conversation.'
+      )
+
     if (
         not self.tag
         and text.startswith(tuple(t.open for t in _TAGS))
