@@ -14,6 +14,7 @@
 
 """Format string utilities."""
 
+from collections.abc import Iterable
 import enum
 import functools
 import re
@@ -94,9 +95,9 @@ _GEMMA3_TO_GEMMA4 = {
 }
 
 
-def _compile_re(mapping: dict[str, str]) -> re.Pattern[str]:
+def _compile_re(tokens: Iterable[str]) -> re.Pattern[str]:
   """Compile the regex from the mapping keys."""
-  keys = sorted(mapping.keys())
+  keys = sorted(list(tokens))
   keys = map(re.escape, keys)
   return re.compile('|'.join(keys))
 
