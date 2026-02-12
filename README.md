@@ -6,6 +6,8 @@
 Library to manipulate and display conversations.
 
 ✨ Try it on Colab:
+https://colab.research.google.com/github/google-deepmind/dialog/blob/main/colab/dialog.ipynb
+✨
 
 ## Features
 
