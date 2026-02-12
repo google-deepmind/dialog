@@ -309,7 +309,7 @@ class Turn(
   def as_html(self, collapsed: bool = False) -> str:
     """Returns the HTML of the turn."""
     return html_helper.collapsible(
-        content=_merge_inline_chunks(self.chunks),
+        content=merge_inline_chunks(self.chunks),
         summary=html_helper.summary(
             title=self.ROLE,
             icons=self.title_icon,
@@ -427,7 +427,7 @@ class Thought(
         num_chars += len(c.text)
 
     return html_helper.collapsible(
-        content=_merge_inline_chunks(self.chunks),
+        content=merge_inline_chunks(self.chunks),
         summary=html_helper.summary(
             title='Thought',
             subtitle=f'({num_chars:,} characters)',
@@ -779,7 +779,7 @@ def _merge_text_chunks(chunks: list[Chunk]) -> list[Chunk]:
   return new_chunks
 
 
-def _merge_inline_chunks(chunks: list[Chunk]) -> str:
+def merge_inline_chunks(chunks: list[Chunk]) -> str:
   """Merges inline chunks into a single HTML tag."""
   parts = []
   for chunk in chunks:

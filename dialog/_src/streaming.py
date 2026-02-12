@@ -88,10 +88,12 @@ class StreamHandler:
 
 def _str_to_final_html(data: str) -> str:
   """Converts a string to a final HTML."""
-  chunk = text_utils.ConversationStr(data)
+
+  # Hack: to parse, we first wrap in a full turn, and then un-wrap the chunks.
+  conv = text_utils.ConversationStr(f'<|turn>model\n{data}<turn|>')
 
   try:
-    chunk = chunk.as_chunk()
+    (turn,) = conv.as_conversation()
   except Exception:  # pylint: disable=broad-exception-caught
     return html_helper.collapsible(
         summary=html_helper.summary(
@@ -103,7 +105,7 @@ def _str_to_final_html(data: str) -> str:
         open=True,
     )
   else:
-    return chunk.as_html()
+    return conversation.merge_inline_chunks(turn.chunks)
 
 
 def _str_to_tmp_html(tag: tags.ClosedTag, data: str) -> str:
