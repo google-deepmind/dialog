@@ -202,7 +202,7 @@ def _parser() -> lark.Lark:
       start:  TOOL_NAME dict
 
       # Call name (e.g. `declaration:foo`)
-      TOOL_NAME: CNAME COLON /[ a-zA-Z0-9_:\/\\.()-]+/
+      TOOL_NAME: CNAME COLON /[ a-zA-Z0-9_:'"\/\\.()-]+/
       # TOOL_NAME: /[^{]+/  # Match all characters until `{`.
 
       # Body
