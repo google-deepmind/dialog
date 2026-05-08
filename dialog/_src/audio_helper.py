@@ -216,10 +216,13 @@ class _Decoder:
 
   @classmethod
   def from_mime_type(cls, mime_type: str) -> Self | None:
-    """Returns whether the mime type matches."""
+    """Returns the decoder matching the mime type, or None."""
     mime_type = mime_type.lower()
+    # Strip parameters from mime type.
+    # e.g. 'audio/pcm;rate=24000' -> 'audio/pcm'
+    base_mime_type = mime_type.split(';')[0].strip()
     for subcls in cls.__subclasses__():
-      if mime_type in subcls.MIME_TYPES:
+      if mime_type in subcls.MIME_TYPES or base_mime_type in subcls.MIME_TYPES:
         return subcls()
 
     return None
@@ -274,8 +277,7 @@ class _PcmDecoder(_Decoder):
         wav_file.setsampwidth(array.dtype.itemsize)
         wav_file.setframerate(data.sample_rate)
         wav_file.writeframes(array.tobytes())
-
-    return f.getvalue()
+      return f.getvalue()
 
 
 def _validate_pcm_int_16(data: np.ndarray) -> None:

@@ -15,6 +15,7 @@
 import pathlib
 
 import dialog
+import numpy as np
 import pydub
 import pydub.generators
 
