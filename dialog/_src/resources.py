@@ -22,5 +22,6 @@ from etils import epath
 @functools.cache
 def read(path: str) -> str:
   """Reads a resource."""
+  # pyrefly: ignore[bad-assignment]
   path = epath.resource_path('dialog') / '_src/static' / path
-  return path.read_text()
+  return path.read_text()  # pyrefly: ignore[missing-attribute]

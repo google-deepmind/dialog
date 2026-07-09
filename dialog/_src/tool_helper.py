@@ -160,10 +160,11 @@ class _MCPToolBase[_McpT: pydantic.BaseModel]:
   def _from_data(cls, data: ToolLike) -> Self | None:
     """Converts a tool definition to MCP tool."""
     if isinstance(data, str):
+      # pyrefly: ignore[bad-return]
       return _tool_from_text(data, cls.DIALOG_CLS())
 
     if isinstance(data, dict):  # Json to MCP
-      mcp_cls = cls.MCP_CLS()
+      mcp_cls = cls.MCP_CLS()  # pyrefly: ignore[missing-attribute]
       try:
         data = mcp_cls.model_validate(data, strict=True)
       except Exception as e:  # pylint: disable=broad-except
@@ -183,10 +184,12 @@ class _MCPToolBase[_McpT: pydantic.BaseModel]:
 
   @classmethod
   def _is_mcp(cls, data: Any) -> TypeGuard[_McpT]:  # pytype: disable=name-error
+    # pyrefly: ignore[missing-attribute]
     return 'mcp' in sys.modules and isinstance(data, cls.MCP_CLS())
 
   @property
   def name(self) -> str:
+    # pyrefly: ignore[missing-attribute]
     return self.data.name  # pylint: disable=attribute-error
 
   @property
@@ -198,7 +201,9 @@ class _MCPToolBase[_McpT: pydantic.BaseModel]:
 class _MCPTool(_MCPToolBase['mcp.Tool'], Tool):
   """Tool definition from a MCP Json."""
 
+  # pyrefly: ignore[bad-override]
   MCP_CLS = staticmethod(lambda: mcp.Tool)
+  # pyrefly: ignore[bad-override]
   DIALOG_CLS = staticmethod(lambda: conversation.Tool)
 
   @classmethod
@@ -209,12 +214,12 @@ class _MCPTool(_MCPToolBase['mcp.Tool'], Tool):
       data['inputSchema'] = {}
       self = super()._from_data(data)
       assert self is not None
-      self.data.inputSchema = None
+      self.data.inputSchema = None  # pyrefly: ignore[bad-assignment]
       return self  # pytype: disable=bad-return-type
     return super()._from_data(data)
 
   @property
-  def def_json(self) -> epy.typing.JsonDict:
+  def def_json(self) -> epy.typing.JsonDict:  # pyrefly: ignore[bad-override]
     json = self.data.model_dump(exclude_none=True)
 
     # TODO(epot): Normalization / conversion of Json.
@@ -260,11 +265,13 @@ def as_mcp_def_dict(data: epy.typing.JsonDict) -> epy.typing.JsonDict:
 class _MCPToolCall(_MCPToolBase['mcp.types.CallToolRequestParams'], ToolCall):
   """Tool call from a MCP Json."""
 
+  # pyrefly: ignore[bad-override]
   MCP_CLS = staticmethod(lambda: mcp.types.CallToolRequestParams)
+  # pyrefly: ignore[bad-override]
   DIALOG_CLS = staticmethod(lambda: conversation.ToolCall)
 
   @property
-  def arguments(self) -> epy.typing.JsonDict:
+  def arguments(self) -> epy.typing.JsonDict:  # pyrefly: ignore[bad-override]
     return self.data.arguments or {}
 
 
@@ -280,7 +287,9 @@ class _MCPToolResponse(_MCPToolBase['mcp.types.CallToolResult'], ToolResponse):
       'isError',
       'content',  # Unused.
   )
+  # pyrefly: ignore[bad-override]
   MCP_CLS = staticmethod(lambda: mcp.types.CallToolResult)
+  # pyrefly: ignore[bad-override]
   DIALOG_CLS = staticmethod(lambda: conversation.ToolResponse)
 
   @classmethod
@@ -291,7 +300,7 @@ class _MCPToolResponse(_MCPToolBase['mcp.types.CallToolResult'], ToolResponse):
     return super()._from_data(data)  # pytype: disable=bad-return-type
 
   def __post_init__(self):
-    if 'name' not in self.data.model_extra:
+    if 'name' not in self.data.model_extra:  # pyrefly: ignore[not-iterable]
       raise ValueError(
           'ToolResponse requires a `name` field matching the ToolCall.\nGot:'
           f' {self.data!r}'
@@ -306,11 +315,11 @@ class _MCPToolResponse(_MCPToolBase['mcp.types.CallToolResult'], ToolResponse):
       )
 
   @property
-  def response(self) -> epy.typing.JsonDict:
-    return self.data.structuredContent
+  def response(self) -> epy.typing.JsonDict:  # pyrefly: ignore[bad-override]
+    return self.data.structuredContent  # pyrefly: ignore[bad-return]
 
   @property
-  def is_error(self) -> bool:
+  def is_error(self) -> bool:  # pyrefly: ignore[bad-override]
     return self.data.isError
 
 
@@ -354,6 +363,7 @@ def _json_to_text_root(
     tag: str,
     kind: str,
 ):
+  # pyrefly: ignore[bad-argument-type, bad-assignment]
   content = _json_to_text(content)
   return f'<|{tag}>{kind}:{name}{content}<{tag}|>'
 
@@ -394,4 +404,4 @@ def _tool_from_text[_McpT](text: str, dialog_cls: type[_McpT]) -> _McpT:
         f'Invalid tool text. Expected `{dialog_cls.__name__}` content. Got:'
         f' `{type(chunk).__name__}`. For: {text!r}'
     )
-  return chunk.data
+  return chunk.data  # pyrefly: ignore[missing-attribute]

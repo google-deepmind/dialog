@@ -126,8 +126,8 @@ def connect_stream(
 ) -> None:
   """Connects the stream to the widget."""
   if isinstance(conv, conversation.Turn):
-    conv = [conv]
+    conv = [conv]  # pyrefly: ignore[bad-assignment]
   for turn in conv:
-    for chunk in turn:
+    for chunk in turn:  # pyrefly: ignore[not-iterable]
       if isinstance(chunk, conversation.Stream):
         chunk.set_widget(widget)

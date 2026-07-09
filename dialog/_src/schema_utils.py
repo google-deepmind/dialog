@@ -54,8 +54,10 @@ def order_alphabetically[_JsonT](json: _JsonT) -> _JsonT:
   """Orders the JSON."""
   match json:
     case dict():
+      # pyrefly: ignore[bad-return]
       return {k: order_alphabetically(v) for k, v in sorted(json.items())}
     case list():
+      # pyrefly: ignore[bad-return]
       return [order_alphabetically(v) for v in json]
     case _:
       return json
@@ -81,6 +83,7 @@ def _normalize_schema(schema: epy.typing.JsonDict) -> epy.typing.JsonDict:
       # 'defs'
   ):
     if key in schema:
+      # pyrefly: ignore[bad-argument-type, unsupported-operation]
       schema[key] = normalize_fn(schema[key])
 
   return schema
@@ -94,6 +97,7 @@ def _normalize_schema_dict(
     raise ValueError(
         f'Schema dict must be a dict, got: `{epy.pretty_repr(schema_dict)}`'
     )
+  # pyrefly: ignore[bad-argument-type, bad-return]
   return {k: _normalize_schema(v) for k, v in schema_dict.items()}
 
 

@@ -144,7 +144,7 @@ class Root(Tree):
       raise ValueError(err_msg())
 
     chunk = chunk.as_conversation()
-    return chunk
+    return chunk  # pyrefly: ignore[bad-return]
 
 
 def _is_last_model_turn_empty(turns: list[conversation.Turn]) -> bool:
@@ -156,6 +156,7 @@ def _is_last_model_turn_empty(turns: list[conversation.Turn]) -> bool:
     return False
   if any(not isinstance(c, conversation.Text) for c in last_turn.chunks):
     return False
+  # pyrefly: ignore[missing-attribute]
   return all(not c.text for c in last_turn.chunks)  # pylint: disable=attribute-error
 
 
@@ -172,6 +173,7 @@ class Tag(Tree):
   def as_html(self) -> str:
     start = self.children[0]
     content = span(['content'])(
+        # pyrefly: ignore[bad-argument-type]
         span(['full-text'])(self.children[1:-1]) + span(['ellipsis'])('...')
     )
     end = self.children[-1]
@@ -197,6 +199,7 @@ class Tag(Tree):
   def _conversation_cls(self):
     match self.name:
       case tags.Tags.TURN.name:
+        # pyrefly: ignore[bad-argument-type]
         cls = conversation.Turn.ROLE_TO_CLS.get(self.role)
         if not cls:
           raise ValueError(f'Unknown turn role: {self.role!r}')
@@ -234,6 +237,7 @@ class Invalid(Tree):
   reason: str
 
   def as_html(self) -> str:
+    # pyrefly: ignore[bad-argument-type]
     return span('invalid', title=self.reason)(self.children)
 
   def raise_if_invalid(self) -> None:
@@ -289,9 +293,9 @@ class Token(Leaf):
 
   def as_conversation(self) -> conversation.Text:
     if self.name == tags.Tags.IMAGE.name:
-      return conversation.Image(None)
+      return conversation.Image(None)  # pyrefly: ignore[bad-return]
     if self.name == tags.Tags.AUDIO.name:
-      return conversation.Audio(None)
+      return conversation.Audio(None)  # pyrefly: ignore[bad-return]
 
     cls = conversation.ControlToken.NAME_TO_CLS.get(self.name)
     if not cls:
@@ -399,10 +403,11 @@ def _make_role_tag_content(items: list[Node]) -> Node:
 
       children = [Role(text=f'{role}\n')]
       if content:
+        # pyrefly: ignore[bad-argument-type]
         children.append(Text(text=content))
-      children.extend(rest)
+      children.extend(rest)  # pyrefly: ignore[bad-argument-type]
 
-      return Tree(children=children)
+      return Tree(children=children)  # pyrefly: ignore[bad-argument-type]
     case _:
       reason = 'Invalid format. Expected `<|tag>role\\n`'
       return Invalid(children=items, reason=reason)
@@ -488,7 +493,7 @@ def span(
     if not isinstance(text, list):
       text = [text]
     text = [t.as_html() if isinstance(t, Node) else t for t in text]
-    text = ''.join(text)
+    text = ''.join(text)  # pyrefly: ignore[no-matching-overload]
     return f'<span class="{class_}" {attrs}>{text}</span>'
 
   return _apply

@@ -23,8 +23,8 @@ def test_add():
 
   assert len(conv) == 0  # pylint: disable=g-explicit-length-test
 
-  conv += dialog.User('Hello')
-  conv += dialog.Model('Hi')
+  conv += dialog.User('Hello')  # pyrefly: ignore[unsupported-operation]
+  conv += dialog.Model('Hi')  # pyrefly: ignore[unsupported-operation]
 
   assert len(conv) == 2
 
@@ -33,6 +33,7 @@ def test_add():
       dialog.Model('Hi'),
   )
 
+  # pyrefly: ignore[unsupported-operation]
   conv = dialog.System('Be nice') + conv
   assert conv == dialog.Conversation(
       dialog.System('Be nice'),

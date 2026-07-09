@@ -85,13 +85,14 @@ class Conversation(
   def __init__(self, *turns: TurnLike):
     """Initializes the conversation."""
 
-    turns = itertools.chain.from_iterable(
+    turns = itertools.chain.from_iterable(  # pyrefly: ignore[bad-assignment]
         Turn.turns_from_data(t) for t in turns
     )
-    turns = list(turns)
+    turns = list(turns)  # pyrefly: ignore[bad-assignment]
     # Merge turns from the same type together.
+    # pyrefly: ignore[bad-argument-type, bad-assignment]
     turns = _merge_similar_turns(turns)
-    self.turns: list[Turn] = turns
+    self.turns: list[Turn] = turns  # pyrefly: ignore[bad-assignment]
 
   def as_text(
       self,
@@ -265,13 +266,13 @@ class Turn(
   def turns_from_data(cls, data: TurnLike) -> list[Self]:
     """Creates a turn from data."""
     if isinstance(data, Turn):
-      return [data]
+      return [data]  # pyrefly: ignore[bad-return]
     elif isinstance(data, list | tuple):
       return list(
           itertools.chain.from_iterable(cls.turns_from_data(t) for t in data)
       )
     elif isinstance(data, Conversation):
-      return data.turns
+      return data.turns  # pyrefly: ignore[bad-return]
     elif isinstance(data, str):
       # Remove the tool response tag.
       if data.endswith(tags.Tags.TOOL_RESPONSE.open):
@@ -284,7 +285,7 @@ class Turn(
       raise TypeError(f'Unsupported turn type: `{type(data).__name__}`.')
 
   def __init__(self, *chunks: ChunkLike):
-    chunks = list(_flatten(chunks))
+    chunks = list(_flatten(chunks))  # pyrefly: ignore[bad-assignment]
     self.chunks = [Chunk.from_data(c) for c in chunks]
 
   def as_text(self, *, closed: bool = True, open: bool = True) -> str:  # pylint: disable=redefined-builtin
@@ -375,6 +376,7 @@ class Chunk(auto_register.RegisterSubclasses[ChunkLike], abc.ABC):
   # Inline chunks are merged together into a single html tag.
   INLINE: ClassVar[bool] = False
   COLLAPSIBLE: ClassVar[bool] = False
+  # pyrefly: ignore[invalid-annotation]
   ICON: ClassVar[html_helper.Icon] | None = None
 
   @abc.abstractmethod
@@ -443,7 +445,7 @@ class Thought(
     return type(self)(_merge_text_chunks(self.chunks))
 
   @property
-  def title_icon(self) -> html_helper.IconSet:
+  def title_icon(self) -> html_helper.IconSet:  # pyrefly: ignore[bad-override]
     return html_helper.IconSet(
         [self.ICON] + [c.title_icon for c in self.chunks]
     )
@@ -652,7 +654,7 @@ class ToolResponse(Chunk, mixin_utils.AddRepr):
     )
 
   @property
-  def title_icon(self) -> html_helper.IconSet:
+  def title_icon(self) -> html_helper.IconSet:  # pyrefly: ignore[bad-override]
     icons = [self.ICON]
     if self.data.is_error:  # pytype: disable=attribute-error
       icons.append(self.FAILED_ICON)

@@ -94,7 +94,7 @@ class Image(auto_register.RegisterSubclasses[ImageLike]):
 class _ArrayImage(Image):
   """Image data from a numpy array."""
 
-  data: enp.typing.Array
+  data: enp.typing.Array  # pyrefly: ignore[not-a-type]
 
   def __post_init__(self):
     if not enp.lazy.is_array(self.data):

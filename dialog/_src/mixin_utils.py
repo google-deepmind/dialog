@@ -81,6 +81,7 @@ class Sequence[_ElemT, _ElemLikeT]:
   # Turn() + Conversation()
   # as:
   # Conversation().__radd__(Turn())
+  # pyrefly: ignore[invalid-annotation]
   ADD_NOT_IMPLEMENTED_CLS: tuple[ClassVar[type[Any]], ...] = ()
 
   def __init__(self, *args: _ElemLikeT):  # pytype: disable=name-error

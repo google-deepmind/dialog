@@ -42,9 +42,10 @@ class ToolContent(text_grammar.Tree):
   """Content of a tool (`<|tool_xxx>...<tool_xxx|>`)."""
 
   def as_html(self) -> str:
+    # pyrefly: ignore[bad-argument-type]
     return text_grammar.span('json-container')(self.children)
 
-  def as_conversation(self, *, kind: str):
+  def as_conversation(self, *, kind: str):  # pyrefly: ignore[bad-override]
     match self.children:
       case [ToolName() as tool_name, Dict() as content]:
         if kind != tool_name.kind:

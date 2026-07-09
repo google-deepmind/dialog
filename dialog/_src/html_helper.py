@@ -158,7 +158,7 @@ def _collapse_icon(is_collapsed: bool) -> str:
 
 def json_to_html(json: epy.typing.JsonDict) -> str:
   """Returns the HTML of the JSON."""
-  content = _json_to_html(json)
+  content = _json_to_html(json)  # pyrefly: ignore[bad-argument-type]
   return f'<div class="json-container">{content}</div>'
 
 
