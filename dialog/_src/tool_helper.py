@@ -75,7 +75,7 @@ class Tool(
 
   @property
   def parameters(self) -> epy.typing.JsonDict:
-    return self.def_json.get('parameters', {}).get('properties', {})  # pylint: disable=attribute-error
+    return self.def_json.get('parameters', {}).get('properties', {})  # pylint: disable=attribute-error  # pyrefly: ignore[missing-attribute]
 
   def as_text(self) -> str:
     """Returns the text of the tool definition."""
