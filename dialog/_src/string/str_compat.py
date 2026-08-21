@@ -97,7 +97,7 @@ _GEMMA3_TO_GEMMA4 = {
 
 def _compile_re(tokens: Iterable[str]) -> re.Pattern[str]:
   """Compile the regex from the mapping keys."""
-  keys = sorted(list(tokens))
+  keys = sorted(list(tokens), key=len, reverse=True)
   keys = map(re.escape, keys)
   return re.compile('|'.join(keys))
 
@@ -109,3 +109,85 @@ def _sub_xx_to_yy(
 ) -> str:
   """Replace the `<ctrlXX>` tokens by `<|...|>` tokens."""
   return pattern.sub(lambda match: mapping[match.group(0)], text)
+
+
+
+def _all_control_tokens() -> frozenset[str]:
+  """Returns every known control token string across all formats."""
+  tokens: set[str] = set()
+  # Gemma 4 format: closed tags produce <|name> and <name|> pairs.
+  for closed_tag in (
+      tags.Tags.TURN,
+      tags.Tags.CHANNEL,
+      tags.Tags.TOOL,
+      tags.Tags.TOOL_CALL,
+      tags.Tags.TOOL_RESPONSE,
+  ):
+    tokens.add(closed_tag.open)
+    tokens.add(closed_tag.close)
+  # Gemma 4 format: standalone tags produce <|name|>.
+  for standalone_tag in (
+      tags.Tags.THINK,
+      tags.Tags.IMAGE,
+      tags.Tags.AUDIO,
+      tags.Tags.VIDEO,
+      tags.Tags.QUOTE,
+  ):
+    tokens.add(standalone_tag.tag)
+  # Include Gemma 3 and Gemini format-specific tokens.
+  tokens.update(_GEMMA3_TO_GEMMA4.keys())
+  return frozenset(tokens)
+
+
+_ALL_CONTROL_TOKENS = _all_control_tokens()
+_CONTROL_TOKEN_RE = _compile_re(_ALL_CONTROL_TOKENS)
+
+# Build the escaped form of each token for unescape matching.
+_ESCAPED_TOKENS = frozenset(
+    t.replace('<', '&lt;').replace('>', '&gt;') for t in _ALL_CONTROL_TOKENS
+)
+_ESCAPED_CONTROL_TOKEN_RE = _compile_re(_ESCAPED_TOKENS)
+
+
+def escape(text: str) -> str:
+  """Escapes control token sequences in text to prevent prompt injection.
+
+  Replaces '<' and '>' in known control token delimiters with '&lt;' and
+  '&gt;' (HTML entities) so that tokenizers will not treat user-provided text
+  as special control tokens.  HTML entities are used because they completely
+  eliminate the original '<'/'>' bytes from the token pattern, which is
+  necessary to defeat substring-based special token matching in tokenizers.
+
+  The set of matched tokens is derived from the authoritative definitions in
+  `tags.Tags` and the format conversion mappings, so new tokens are
+  automatically covered.
+
+  Args:
+    text: The raw text to escape.
+
+  Returns:
+    The escaped text.
+  """
+
+  def _replace(match: re.Match[str]) -> str:
+    s = match.group(0)
+    return s.replace('<', '&lt;').replace('>', '&gt;')
+
+  return _CONTROL_TOKEN_RE.sub(_replace, text)
+
+
+def unescape(text: str) -> str:
+  """Unescapes escaped control token sequences in text.
+
+  Args:
+    text: The escaped text.
+
+  Returns:
+    The original text with unescaped control tokens.
+  """
+
+  def _replace(match: re.Match[str]) -> str:
+    s = match.group(0)
+    return s.replace('&lt;', '<').replace('&gt;', '>')
+
+  return _ESCAPED_CONTROL_TOKEN_RE.sub(_replace, text)
