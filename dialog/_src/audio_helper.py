@@ -273,7 +273,7 @@ class _PcmDecoder(_Decoder):
 
     with io.BytesIO() as f:
       with wave.open(f, 'wb') as wav_file:
-        wav_file.setnchannels(array.shape[1] if array.ndim > 1 else 1)
+        wav_file.setnchannels(array.shape[1] if array.ndim > 1 else 1)  # pyrefly: ignore[bad-index]
         wav_file.setsampwidth(array.dtype.itemsize)
         wav_file.setframerate(data.sample_rate)
         wav_file.writeframes(array.tobytes())
