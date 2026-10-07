@@ -31,9 +31,9 @@ import numpy as np
 import requests
 
 with epy.lazy_imports():
-  # pylint: disable=g-import-not-at-top  # pytype: disable=import-error
-  import pydub
-  # pytype: enable=import-error  # pylint: enable=g-import-not-at-top
+  # pylint: disable=g-import-not-at-top
+  import pydub  # pyrefly: ignore[missing-import]
+  # pylint: enable=g-import-not-at-top
 
 
 type AudioLike = (

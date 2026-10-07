@@ -31,11 +31,11 @@ from dialog._src.string import text_utils
 from etils import epy
 
 with epy.lazy_imports():
-  # pylint: disable=g-import-not-at-top  # pytype: disable=import-error
+  # pylint: disable=g-import-not-at-top
   import mcp
   import pydantic
   from dialog._src import conversation
-  # pytype: enable=import-error  # pylint: enable=g-import-not-at-top
+  # pylint: enable=g-import-not-at-top
 
 
 type ToolLike = (
@@ -150,10 +150,10 @@ class ToolResponse(
 class _MCPToolBase[_McpT: pydantic.BaseModel]:
   """Common base class for MCP tools."""
 
-  data: _McpT  # pytype: disable=name-error
+  data: _McpT
 
   # Use callable for lazy-imports.
-  MCP_CLS: ClassVar[Callable[[], type[_McpT]]]  # pytype: disable=name-error
+  MCP_CLS: ClassVar[Callable[[], type[_McpT]]]  # pyrefly: ignore[invalid-annotation]
   DIALOG_CLS: ClassVar[Callable[[], type[conversation.Chunk]]]
 
   @classmethod
@@ -164,7 +164,7 @@ class _MCPToolBase[_McpT: pydantic.BaseModel]:
       return _tool_from_text(data, cls.DIALOG_CLS())
 
     if isinstance(data, dict):  # Json to MCP
-      mcp_cls = cls.MCP_CLS()  # pyrefly: ignore[missing-attribute]
+      mcp_cls = cls.MCP_CLS()
       try:
         data = mcp_cls.model_validate(data, strict=True)
       except Exception as e:  # pylint: disable=broad-except
@@ -172,7 +172,7 @@ class _MCPToolBase[_McpT: pydantic.BaseModel]:
         raise
     if not cls._is_mcp(data):
       return None
-    if data.model_extra and (extra := set(data.model_extra) - {'name'}):  # pytype: disable=attribute-error
+    if data.model_extra and (extra := set(data.model_extra) - {'name'}):
       raise ValueError(
           f'Extra MCP fields not allowed: {sorted(extra)}, for {data}.'
       )
@@ -183,8 +183,7 @@ class _MCPToolBase[_McpT: pydantic.BaseModel]:
     return cls._is_mcp(data)
 
   @classmethod
-  def _is_mcp(cls, data: Any) -> TypeGuard[_McpT]:  # pytype: disable=name-error
-    # pyrefly: ignore[missing-attribute]
+  def _is_mcp(cls, data: Any) -> TypeGuard[_McpT]:
     return 'mcp' in sys.modules and isinstance(data, cls.MCP_CLS())
 
   @property
@@ -201,9 +200,7 @@ class _MCPToolBase[_McpT: pydantic.BaseModel]:
 class _MCPTool(_MCPToolBase['mcp.Tool'], Tool):
   """Tool definition from a MCP Json."""
 
-  # pyrefly: ignore[bad-override]
   MCP_CLS = staticmethod(lambda: mcp.Tool)
-  # pyrefly: ignore[bad-override]
   DIALOG_CLS = staticmethod(lambda: conversation.Tool)
 
   @classmethod
@@ -215,7 +212,7 @@ class _MCPTool(_MCPToolBase['mcp.Tool'], Tool):
       self = super()._from_data(data)
       assert self is not None
       self.data.inputSchema = None  # pyrefly: ignore[bad-assignment]
-      return self  # pytype: disable=bad-return-type
+      return self
     return super()._from_data(data)
 
   @property
@@ -265,9 +262,7 @@ def as_mcp_def_dict(data: epy.typing.JsonDict) -> epy.typing.JsonDict:
 class _MCPToolCall(_MCPToolBase['mcp.types.CallToolRequestParams'], ToolCall):
   """Tool call from a MCP Json."""
 
-  # pyrefly: ignore[bad-override]
   MCP_CLS = staticmethod(lambda: mcp.types.CallToolRequestParams)
-  # pyrefly: ignore[bad-override]
   DIALOG_CLS = staticmethod(lambda: conversation.ToolCall)
 
   @property
@@ -287,9 +282,7 @@ class _MCPToolResponse(_MCPToolBase['mcp.types.CallToolResult'], ToolResponse):
       'isError',
       'content',  # Unused.
   )
-  # pyrefly: ignore[bad-override]
   MCP_CLS = staticmethod(lambda: mcp.types.CallToolResult)
-  # pyrefly: ignore[bad-override]
   DIALOG_CLS = staticmethod(lambda: conversation.ToolResponse)
 
   @classmethod
@@ -297,7 +290,7 @@ class _MCPToolResponse(_MCPToolBase['mcp.types.CallToolResult'], ToolResponse):
     if isinstance(data, dict) and 'content' not in data:
       data = dict(data)
       data['content'] = []
-    return super()._from_data(data)  # pytype: disable=bad-return-type
+    return super()._from_data(data)
 
   def __post_init__(self):
     if 'name' not in self.data.model_extra:  # pyrefly: ignore[not-iterable]
@@ -374,7 +367,7 @@ def _json_to_text(json: epy.typing.Json) -> str:
   if isinstance(json, str):
     return f'<|"|>{json}<|"|>'
   elif isinstance(json, dict):
-    items = [f'{k}:{_json_to_text(v)}' for k, v in json.items()]  # pytype: disable=attribute-error
+    items = [f'{k}:{_json_to_text(v)}' for k, v in json.items()]
     content = ','.join(items)
     return '{' + content + '}'
   elif isinstance(json, list):
@@ -387,7 +380,7 @@ def _json_to_text(json: epy.typing.Json) -> str:
   elif isinstance(json, int):
     return str(json)
   elif isinstance(json, float):
-    if json.is_integer():  # `1.0` is formatted as `1`  # pytype: disable=attribute-error
+    if json.is_integer():  # `1.0` is formatted as `1`
       return str(int(json))
     return str(json)
   elif isinstance(json, type(None)):

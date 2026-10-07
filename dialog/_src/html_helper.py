@@ -183,7 +183,7 @@ def _json_to_html(json: epy.typing.Json) -> str:
     return f'<span class="{class_}">{json}</span>'
   elif isinstance(json, dict):
     items = []
-    for k, v in json.items():  # pytype: disable=attribute-error
+    for k, v in json.items():
       items.append(
           '<div class="json-item">'
           f'<span class="json-key">{k}</span>: {_json_to_html(v)}'

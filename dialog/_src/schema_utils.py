@@ -117,6 +117,6 @@ def _type_to_upper(type_: str | list[str]) -> str | list[str]:
     case str():
       return type_.upper()
     case list():  # Not officially supported, but commonly used.
-      return [_type_to_upper(t) for t in type_]  # pytype: disable=bad-return-type
+      return [_type_to_upper(t) for t in type_]  # pyrefly: ignore[bad-return]
     case _:
       raise ValueError(f'Unsupported type: {type_}')

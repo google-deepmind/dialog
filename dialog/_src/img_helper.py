@@ -120,9 +120,9 @@ class _ArrayImage(Image):
   def is_data_supported_without_doubt(cls, data: ImageLike) -> bool:
     return (
         enp.lazy.is_array(data)
-        and data.ndim == 3  # pytype: disable=attribute-error
-        and data.shape[-1] == 3  # pytype: disable=attribute-error
-        and data.dtype == np.uint8  # pytype: disable=attribute-error
+        and data.ndim == 3
+        and data.shape[-1] == 3
+        and data.dtype == np.uint8
     )
 
   @functools.cached_property

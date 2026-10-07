@@ -14,9 +14,9 @@
 
 """Widget for dialog."""
 
-import anywidget  # pytype: disable=import-error
+import anywidget  # pyrefly: ignore[missing-import]
 from dialog._src import resources
-import traitlets  # pytype: disable=import-error
+import traitlets
 
 
 class Conversation(anywidget.AnyWidget):

@@ -36,7 +36,7 @@ class RegisterSubclasses[_DataLikeT]:
       cls.SUBCLASSES.append(cls)
 
   @classmethod
-  def from_data(cls, data: _DataLikeT) -> Self:  # pytype: disable=name-error
+  def from_data(cls, data: _DataLikeT) -> Self:
     """Creates the instance from the data."""
     if isinstance(data, cls.ROOT_CLS):
       return data
@@ -57,19 +57,19 @@ class RegisterSubclasses[_DataLikeT]:
     )
 
   @classmethod
-  def _from_data(cls, data: _DataLikeT) -> Self | None:  # pytype: disable=name-error
+  def _from_data(cls, data: _DataLikeT) -> Self | None:
     """If the subclass can consume the data, returns an instance."""
     del data
     return None
 
   @classmethod
-  def _debug_msg_from_data(cls, data: _DataLikeT) -> str | None:  # pytype: disable=name-error
+  def _debug_msg_from_data(cls, data: _DataLikeT) -> str | None:
     """Returns a debug message from the data."""
     del data
     return None
 
   @classmethod
-  def is_data_supported_without_doubt(cls, data: _DataLikeT) -> bool:  # pytype: disable=name-error
+  def is_data_supported_without_doubt(cls, data: _DataLikeT) -> bool:
     """Returns whether the subclass can consume the data.
 
     The `without_doubt` is here as it should be absolutely certain that the

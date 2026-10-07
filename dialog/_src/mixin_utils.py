@@ -84,17 +84,17 @@ class Sequence[_ElemT, _ElemLikeT]:
   # pyrefly: ignore[invalid-annotation]
   ADD_NOT_IMPLEMENTED_CLS: tuple[ClassVar[type[Any]], ...] = ()
 
-  def __init__(self, *args: _ElemLikeT):  # pytype: disable=name-error
+  def __init__(self, *args: _ElemLikeT):
     raise NotImplementedError()
 
   def __len__(self) -> int:
     return len(self._sequence)
 
-  def __iter__(self) -> Iterator[_ElemT]:  # pytype: disable=name-error
+  def __iter__(self) -> Iterator[_ElemT]:
     return iter(self._sequence)
 
   @typing.overload
-  def __getitem__(self, index: int) -> _ElemT:  # pytype: disable=name-error
+  def __getitem__(self, index: int) -> _ElemT:
     ...
 
   @typing.overload
@@ -107,14 +107,14 @@ class Sequence[_ElemT, _ElemLikeT]:
     else:
       return self._sequence[index]
 
-  def __add__(self, other: collections.abc.Sequence[_ElemLikeT]) -> Self:  # pytype: disable=name-error
+  def __add__(self, other: collections.abc.Sequence[_ElemLikeT]) -> Self:
     if isinstance(other, self.ADD_NOT_IMPLEMENTED_CLS):
-      return NotImplemented  # pytype: disable=bad-return-type
+      return NotImplemented
     return type(self)(self._sequence, other)
 
-  def __radd__(self, other: collections.abc.Sequence[_ElemLikeT]) -> Self:  # pytype: disable=name-error
+  def __radd__(self, other: collections.abc.Sequence[_ElemLikeT]) -> Self:
     if isinstance(other, self.ADD_NOT_IMPLEMENTED_CLS):
-      return NotImplemented  # pytype: disable=bad-return-type
+      return NotImplemented
     return type(self)(other, self._sequence)
 
   def __eq__(self, other: Any) -> bool:
@@ -123,5 +123,5 @@ class Sequence[_ElemT, _ElemLikeT]:
     return self._sequence == other._sequence  # pylint: disable=protected-access
 
   @property
-  def _sequence(self) -> list[_ElemT]:  # pytype: disable=name-error
+  def _sequence(self) -> list[_ElemT]:
     return getattr(self, self.SEQUENCE_ATTRIBUTE)

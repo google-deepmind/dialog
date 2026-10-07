@@ -224,7 +224,9 @@ class Tag(Tree):
       return content.as_conversation(kind=self.name)
     elif isinstance(content, Tree):
       return [
-          c.as_conversation() for c in content.children if not isinstance(c, Role)  # pytype: disable=attribute-error
+          c.as_conversation()
+          for c in content.children
+          if not isinstance(c, Role)
       ]
     else:
       raise ValueError(f'Unknown content type: {type(content)}')
@@ -300,7 +302,7 @@ class Token(Leaf):
     cls = conversation.ControlToken.NAME_TO_CLS.get(self.name)
     if not cls:
       raise ValueError(f'Unknown control token: {self.as_text()!r}')
-    return cls()  # pylint: disable=no-value-for-parameter  # pytype: disable=missing-parameter
+    return cls()  # pylint: disable=no-value-for-parameter  # pyrefly: ignore[bad-return, missing-argument]
 
 
 class Transformer(lark.Transformer):

@@ -39,7 +39,7 @@ from etils import epy
 
 with epy.lazy_imports():
   # pylint: disable=g-import-not-at-top
-  import IPython.display  # pytype: disable=import-error
+  import IPython.display
   from dialog._src import widget as widget_lib
   from dialog._src import streaming
 
@@ -51,14 +51,14 @@ _T = TypeVar('_T')
 # TODO(epot): More clear annotations (i.e. `Turns` vs `Turn`)
 type TurnLike = (
     # Guard
-    Conversation  # pytype: disable=name-error
+    Conversation
     | str  # Reverse string parsing (`<|turn>user\n...<turn|>`)
-    | Turn  # pytype: disable=name-error
-    | Sequence[TurnLike]  # pytype: disable=name-error
+    | Turn
+    | Sequence[TurnLike]
 )
 type ChunkLike = (
     str
-    | Chunk  # pytype: disable=name-error
+    | Chunk
     # A subset of the data is directly supported. i.e. One can do:
     # dialog.User(np.array((h, w, 3), dtype=np.uint8))
     # As alias for:
@@ -69,7 +69,7 @@ type ChunkLike = (
     # dialog.User(dialog.Image('/path/to/image.png'))
     | tool_helper.ToolLike
     | img_helper.ImageLike
-)  # pytype: disable=name-error
+)
 
 
 # MARK: Conversation
@@ -522,7 +522,7 @@ class Image(Chunk, mixin_utils.AddRepr):
     if enp.lazy.is_array(data):
       return (
           'Images are expected to be 3D uint8 arrays, got'
-          f' shape={data.shape}, dtype={data.dtype}'  # pylint: disable=attribute-error  # pytype: disable=attribute-error
+          f' shape={data.shape}, dtype={data.dtype}'  # pylint: disable=attribute-error
       )
 
   def as_text(self) -> str:
@@ -565,7 +565,7 @@ class Tool(Chunk, mixin_utils.AddRepr):
 
   def as_text(self) -> str:
     """Returns the text of the chunk."""
-    return self.data.as_text()  # pytype: disable=attribute-error
+    return self.data.as_text()
 
   def as_html(self) -> str:
     """Returns the text of the chunk."""
@@ -601,7 +601,7 @@ class ToolCall(Chunk, mixin_utils.AddRepr):
 
   def as_text(self) -> str:
     """Returns the text of the chunk."""
-    return self.data.as_text()  # pytype: disable=attribute-error
+    return self.data.as_text()
 
   def as_html(self) -> str:
     """Returns the text of the chunk."""
@@ -637,7 +637,7 @@ class ToolResponse(Chunk, mixin_utils.AddRepr):
 
   def as_text(self) -> str:
     """Returns the text of the chunk."""
-    return self.data.as_text()  # pytype: disable=attribute-error
+    return self.data.as_text()
 
   def as_html(self) -> str:
     """Returns the text of the chunk."""
@@ -656,7 +656,7 @@ class ToolResponse(Chunk, mixin_utils.AddRepr):
   @property
   def title_icon(self) -> html_helper.IconSet:  # pyrefly: ignore[bad-override]
     icons = [self.ICON]
-    if self.data.is_error:  # pytype: disable=attribute-error
+    if self.data.is_error:
       icons.append(self.FAILED_ICON)
     # TODO(epot): Also include image/audio answers.
     return html_helper.IconSet(icons)
@@ -675,7 +675,7 @@ class ControlToken(mixin_utils.AddRepr, Chunk):
 
   def __init_subclass__(cls, **kwargs):
     super().__init_subclass__(**kwargs)
-    name = cls.name  # pytype: disable=attribute-error
+    name = cls.name
     if isinstance(name, dataclasses.Field):
       name = name.default
     cls.NAME_TO_CLS[name] = cls

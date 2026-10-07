@@ -21,9 +21,7 @@ from etils import epy
 
 with epy.lazy_imports():
   # pylint: disable=g-import-not-at-top
-  # pytype: disable=import-error
   import IPython.display
-  # pytype: enable=import-error
   from dialog._src import widget as widget_lib
   from dialog._src import conversation
   # pylint: enable=g-import-not-at-top

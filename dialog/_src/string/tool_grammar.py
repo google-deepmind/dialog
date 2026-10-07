@@ -181,7 +181,7 @@ class Transformer(lark.Transformer):
   def list(self, items: list[text_grammar.Node]):
     return List(children=items)
 
-  def item(self, items: list[text_grammar.Node]):  # pytype: disable=unsupported-operands
+  def item(self, items: list[text_grammar.Node]):  # pyrefly: ignore[unsupported-operation]
     return Item(children=items)
 
   def TOOL_NAME(self, item: lark.Token):
