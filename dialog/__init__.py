@@ -22,6 +22,8 @@ from dialog._src.conversation import Conversation
 # String utils
 from dialog._src.string.text_utils import ConversationStr
 from dialog._src.string.str_compat import Format
+from dialog._src.string.str_compat import escape
+from dialog._src.string.str_compat import unescape
 from dialog._src.tags import Tags
 
 # Turns

@@ -100,6 +100,7 @@ class Conversation(
       training: bool = False,
       format: str_compat.Format | str = str_compat.Format.GEMMA4,  # pylint: disable=redefined-builtin
       add_tool_response_tag_after_call: bool = True,
+      sanitize: bool = False,
   ) -> str:
     r"""Returns the text of the conversation.
 
@@ -134,6 +135,8 @@ class Conversation(
         `<start_of_turn>`, Gemini: `<ctrlXX>`).
       add_tool_response_tag_after_call: If True, a `<|tool_response>` is added
         after the model calls (when last model turns ends with a tool call).
+      sanitize: If True, sanitizes control tokens in user/content text chunks
+        to prevent prompt injection.
 
     Returns:
       The text `str` of the conversation.
@@ -160,7 +163,7 @@ class Conversation(
       closes = [True] * num_other_turns + [last_closed]
 
       text = [
-          turn.as_text(open=o, closed=c)
+          turn.as_text(open=o, closed=c, sanitize=sanitize)
           for turn, o, c in zip(turns, opens, closes)
       ]
 
@@ -168,7 +171,7 @@ class Conversation(
       if add_tool_response_tag_after_call:
         text = _maybe_strip_add_tool_response_tag(text, turns)
     else:
-      text = [turn.as_text() for turn in self.turns]
+      text = [turn.as_text(sanitize=sanitize) for turn in self.turns]
 
     text = '\n'.join(text)
     if format != str_compat.Format.GEMMA4:
@@ -288,13 +291,21 @@ class Turn(
     chunks = list(_flatten(chunks))  # pyrefly: ignore[bad-assignment]
     self.chunks = [Chunk.from_data(c) for c in chunks]
 
-  def as_text(self, *, closed: bool = True, open: bool = True) -> str:  # pylint: disable=redefined-builtin
+  def as_text(
+      self,
+      *,
+      closed: bool = True,
+      open: bool = True,  # pylint: disable=redefined-builtin
+      sanitize: bool = False,
+  ) -> str:
     """Returns the text of the turn.
 
     Args:
       closed: If False, do not add the end-of-turn `<turn|>` token. Used to add
         the start of the incomplete next model turn.
       open: If True, do not add the beginning-of-turn `<|turn>` token.
+      sanitize: If True, sanitizes control tokens in text chunks to prevent prompt
+        injection.
 
     Returns:
       The text of the turn.
@@ -305,6 +316,7 @@ class Turn(
         role=self.ROLE,
         closed=closed,
         open=open,
+        sanitize=sanitize,
     )
 
   def as_html(self, collapsed: bool = False) -> str:
@@ -413,12 +425,13 @@ class Thought(
   def __init__(self, *chunks: ChunkLike):
     self.chunks = [Chunk.from_data(c) for c in _flatten(chunks)]
 
-  def as_text(self) -> str:
+  def as_text(self, *, sanitize: bool = False) -> str:
     """Returns the text of the chunk."""
     return _chunks_to_text(
         self.chunks,
         tag='channel',
         role='thought',
+        sanitize=sanitize,
     )
 
   def as_html(self) -> str:
@@ -467,7 +480,9 @@ class Text(Chunk, mixin_utils.AddRepr):
       return None
     return cls(text=data)
 
-  def as_text(self) -> str:
+  def as_text(self, *, sanitize: bool = False) -> str:
+    if sanitize:
+      return str_compat.escape(self.text)
     return self.text
 
   def as_html(self) -> str:
@@ -827,12 +842,20 @@ def _chunks_to_text(
     role: str,
     closed: bool = True,
     open: bool = True,  # pylint: disable=redefined-builtin
+    sanitize: bool = False,
 ) -> str:
   """Converts a list of chunks to text."""
   content = ''
   if open:
     content += f'<|{tag}>{role}\n'
-  content += ''.join(chunk.as_text() for chunk in chunks)
+  # Only Text and Thought chunks contain user-provided content that may need
+  # escaping.  Other chunk types (Audio, Image, Tool, etc.) produce fixed
+  # placeholder strings that are never user-controlled.
+  for chunk in chunks:
+    if isinstance(chunk, Text | Thought):
+      content += chunk.as_text(sanitize=sanitize)
+    else:
+      content += chunk.as_text()
   if closed:
     content += f'<{tag}|>'
   return content
