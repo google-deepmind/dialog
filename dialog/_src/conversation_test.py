@@ -74,7 +74,7 @@ def test_parse():
               'description': 'Get the current time',
           }),
       ),
-      dialog.User('Describe this image: ', dialog.Image(None)),
+      dialog.User('Describe this image: ', dialog.Image(None)),  # pyrefly: ignore[bad-argument-type]
       dialog.Model(
           dialog.Thought('Let me think...'),
           'What a pretty turtle!',

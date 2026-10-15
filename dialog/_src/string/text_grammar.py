@@ -295,7 +295,7 @@ class Token(Leaf):
 
   def as_conversation(self) -> conversation.Text:
     if self.name == tags.Tags.IMAGE.name:
-      return conversation.Image(None)  # pyrefly: ignore[bad-return]
+      return conversation.Image(None)  # pyrefly: ignore[bad-argument-type, bad-return]
     if self.name == tags.Tags.AUDIO.name:
       return conversation.Audio(None)  # pyrefly: ignore[bad-return]
 

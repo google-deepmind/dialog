@@ -120,9 +120,9 @@ class _ArrayImage(Image):
   def is_data_supported_without_doubt(cls, data: ImageLike) -> bool:
     return (
         enp.lazy.is_array(data)
-        and data.ndim == 3
-        and data.shape[-1] == 3
-        and data.dtype == np.uint8
+        and data.ndim == 3  # pyrefly: ignore[missing-attribute]
+        and data.shape[-1] == 3  # pyrefly: ignore[missing-attribute]
+        and data.dtype == np.uint8  # pyrefly: ignore[missing-attribute]
     )
 
   @functools.cached_property
