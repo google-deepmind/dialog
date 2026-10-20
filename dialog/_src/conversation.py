@@ -433,7 +433,7 @@ class Thought(
         summary=html_helper.summary(
             title='Thought',
             subtitle=f'({num_chars:,} characters)',
-            icons=self.title_icon.remove(self.ICON),
+            icons=self.title_icon.remove(self.ICON),  # pyrefly: ignore[bad-argument-type]
             collapsible=any(c.COLLAPSIBLE for c in self.chunks),
             is_collapsed=True,
         ),
@@ -521,6 +521,7 @@ class Image(Chunk, mixin_utils.AddRepr):
   def _debug_msg_from_data(cls, data: ChunkLike) -> str | None:
     if enp.lazy.is_array(data):
       return (
+          # pyrefly: ignore[missing-attribute]
           'Images are expected to be 3D uint8 arrays, got'
           f' shape={data.shape}, dtype={data.dtype}'  # pylint: disable=attribute-error
       )
@@ -646,7 +647,7 @@ class ToolResponse(Chunk, mixin_utils.AddRepr):
     return html_helper.collapsible(
         summary=html_helper.summary(
             title=self.data.name,
-            icons=self.title_icon.remove(self.ICON),
+            icons=self.title_icon.remove(self.ICON),  # pyrefly: ignore[bad-argument-type]
             subtitle=f'-> {response}',
         ),
         content=html_helper.json_to_html(self.data.full_json),
@@ -803,7 +804,7 @@ def merge_inline_chunks(chunks: list[Chunk]) -> str:
 STREAM_ERROR_ICON = html_helper.Icon(emoji='❌', tooltip='Invalid format!')
 
 
-html_helper.register_icon_order([
+html_helper.register_icon_order([  # pyrefly: ignore[bad-argument-type]
     # Thoughts
     Think.ICON,
     # FastThinkOn.ICON,
