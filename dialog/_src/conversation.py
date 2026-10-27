@@ -513,8 +513,8 @@ class Image(Chunk, mixin_utils.AddRepr):
 
   @classmethod
   def _from_data(cls, data: ChunkLike) -> Self | None:
-    if img_helper.Image.is_data_supported_without_doubt(data):
-      return cls(data)
+    if img_helper.Image.is_data_supported_without_doubt(data):  # pyrefly: ignore[bad-argument-type]
+      return cls(data)  # pyrefly: ignore[bad-argument-type]
     return None
 
   @classmethod
